@@ -5,6 +5,12 @@ from db import stores, items
 
 app = Flask(__name__)
 
+# remove nested collection
+# added a separate set of collection in separate file
+# to represent database
+# and changed list to dictionary -
+# id will be key and values will be having all data
+
 
 @app.get("/store")
 def get_stores():
@@ -28,9 +34,6 @@ if __name__ == '__main__':
 @app.get("/store/<string:store_id>")
 def get_store(store_id):
     try:
-        # print('getting store by id ' + store_id)
-        # if not store_id in stores:
-        #     print('store not found')
         return stores[store_id]
     except KeyError:
         return {"message": "Store not found"}, 404
@@ -43,12 +46,12 @@ def create_store():
         print('store name not found in request data')
         abort(
             400,
-            message="Bad request. Ensure 'name' is included in the JSON payload.",
+            "Bad request. Ensure name is included in the JSON payload.",
         )
     for store in stores.values():
         if store_data["name"] == store["name"]:
             print('store already exists')
-            abort(400, message=f"Store already exists.")
+            abort(400, "Store already exists.")
 
     store_id = uuid.uuid4().hex
     store = {**store_data, "id": store_id}
@@ -136,7 +139,7 @@ def update_item(item_id):
         )
     try:
         item = items[item_id]
-        item |= item_data
+        item |= item_data  # item.update(item_data)
 
         return item
     except KeyError:
